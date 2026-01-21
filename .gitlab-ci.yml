@@ -1,0 +1,34 @@
+image: python:3.10
+
+stages:
+  - style
+  - test
+  - report
+
+style_check:
+  stage: style
+  script:
+    - pip install black
+    - black --check .
+
+test:
+  stage: test
+  script:
+    - pip install pytest coverage numpy matplotlib
+    - coverage run -m pytest
+  artifacts:
+    paths:
+      - .coverage
+    expire_in: 1 day
+
+coverage_report:
+  stage: report
+  script:
+    - pip install coverage
+    - coverage report
+    - coverage xml
+  artifacts:
+    paths:
+      - coverage.xml
+    expire_in: 14 days
+  needs: ["test"]
